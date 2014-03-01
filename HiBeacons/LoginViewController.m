@@ -55,6 +55,7 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 @property (nonatomic, strong) CBPeripheralManager *peripheralManager;
 @property (nonatomic, strong) NSArray *detectedBeacons;
 
+@property (nonatomic, strong) UIView *backgroundPulseView;
 
 @end
 
@@ -73,8 +74,9 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     imgView.layer.masksToBounds = YES;
     imgView.layer.cornerRadius = imgView.bounds.size.width/2.;
     imgView.layer.borderColor = [UIColor yellowColor].CGColor;
-    imgView.layer.borderWidth = 2.;
+    imgView.layer.borderWidth = 1.;
 
+    //[self pulseMe:imgView];
 }
 
 - (void)viewDidLoad
@@ -83,12 +85,13 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 	// Do any additional setup after loading the view.
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterLogin:) name:@"AfterLogin" object:nil];
-
+    
+    self.faceImgView.center = self.view.center;
     [self polishFaceImage:self.faceImgView];
     [self polishFaceImage:self.faceImgView1];
-        [self polishFaceImage:self.faceImgView2];
-        [self polishFaceImage:self.faceImgView3];
-        [self polishFaceImage:self.faceImgView4];
+    [self polishFaceImage:self.faceImgView2];
+    [self polishFaceImage:self.faceImgView3];
+    [self polishFaceImage:self.faceImgView4];
     
 }
 
@@ -122,6 +125,9 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
                 [weakSelf startAdvertisingBeacon];
             }];
         });
+        
+        [self addBackgroundPulse ];
+
 
     }
     
@@ -131,6 +137,38 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 
 }
 
+- (void)addBackgroundPulse{
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
+    view.center = self.view.center;
+    
+    view.backgroundColor = [UIColor colorWithWhite:.5 alpha:.2];
+    view.layer.cornerRadius = 100;
+    
+    [self.view insertSubview:view atIndex:0];
+    
+    CABasicAnimation *scaleAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+    scaleAnimation.duration = 2.;
+    scaleAnimation.repeatCount = HUGE_VAL;
+    scaleAnimation.autoreverses = YES;
+    scaleAnimation.fromValue = [NSNumber numberWithFloat:2.5];
+    scaleAnimation.toValue = [NSNumber numberWithFloat:0.3];
+    
+    [view.layer addAnimation:scaleAnimation forKey:@"scale"];
+    self.backgroundPulseView = view;
+
+}
+- (void)pulseMe:(UIImageView*)imgView{
+    CABasicAnimation *theAnimation;
+    
+    theAnimation=[CABasicAnimation animationWithKeyPath:@"opacity"];
+    theAnimation.duration=1.0;
+    theAnimation.repeatCount=HUGE_VALF;
+    theAnimation.autoreverses=YES;
+    theAnimation.fromValue=[NSNumber numberWithFloat:1.0];
+    theAnimation.toValue=[NSNumber numberWithFloat:0.5];
+    [imgView.layer addAnimation:theAnimation forKey:@"animateOpacity"];
+}
 - (void)afterLogin:(NSNotification*)nft{
     
     NSString *userid = [[nft userInfo] objectForKey:@"userid"];
@@ -151,7 +189,7 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
             
             [weakSelf startRangingForBeacons];
             [weakSelf startAdvertisingBeacon];
-            
+            [weakSelf addBackgroundPulse];
             
         }];
     });
@@ -195,9 +233,11 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     }completion:^(BOOL finished) {
         self.logoutBtn.alpha = 1.;
         
+    
     }];
 
-    
+    [self.backgroundPulseView.layer removeAllAnimations];
+    self.backgroundPulseView.alpha = 0;
 }
 
 
