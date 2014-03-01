@@ -27,7 +27,7 @@
 #import "NTViewController.h"
 
 static NSString * const kUUID = @"00000000-0000-0000-0000-000000000000";
-static NSString * const kIdentifier = @"SomeIdentifier";
+static NSString * const kIdentifier = @"OUYU";
 
 static NSString * const kOperationCellIdentifier = @"OperationCell";
 static NSString * const kBeaconCellIdentifier = @"BeaconCell";
@@ -87,7 +87,7 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
         return;
     
     NSUUID *proximityUUID = [[NSUUID alloc] initWithUUIDString:kUUID];
-    self.beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:proximityUUID identifier:kIdentifier];
+    self.beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:proximityUUID identifier:[NSString stringWithFormat:@"%@-%@",kIdentifier,@"1904178197"]];
 }
 
 - (void)turnOnRanging
@@ -240,6 +240,12 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
         CLBeacon *curr = [beacons objectAtIndex:index];
         NSString *identifier = [NSString stringWithFormat:@"%@/%@", curr.major, curr.minor];
         
+        union Transfer gotValue;
+        gotValue.parts.part1 = curr.major.intValue;
+        gotValue.parts.part2 = curr.minor.intValue;
+        
+        NSLog(@"got value %d", gotValue.whole);
+
         // this is very fast constant time lookup in a hash table
         if ([lookup containsObject:identifier]) {
             [mutableBeacons removeObjectAtIndex:index];
@@ -305,6 +311,14 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     [self.beaconTableView endUpdates];
 }
 
+union Transfer {
+    uint32_t whole;
+    struct Parts {
+        uint16_t part1;
+        uint16_t part2;
+    } parts;
+};
+
 #pragma mark - Beacon advertising
 - (void)turnOnAdvertising
 {
@@ -316,9 +330,16 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     
     time_t t;
     srand((unsigned) time(&t));
+    //1827594675
+    //1904178197
+    union Transfer convert;
+    convert.whole = 1904178197;
+    
+    uint32_t sinaUid = 1904178197;
+    
     CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:self.beaconRegion.proximityUUID
-                                                                     major:rand()
-                                                                     minor:rand()
+                                                                     major:convert.parts.part1
+                                                                     minor:convert.parts.part2
                                                                 identifier:self.beaconRegion.identifier];
     NSDictionary *beaconPeripheralData = [region peripheralDataWithMeasuredPower:nil];
     [self.peripheralManager startAdvertising:beaconPeripheralData];
@@ -441,7 +462,8 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                               reuseIdentifier:kBeaconCellIdentifier];
             
-            cell.textLabel.text = beacon.proximityUUID.UUIDString;
+            //cell.textLabel.text = beacon.proximityUUID.UUIDString;
+            cell.textLabel.text = self.beaconRegion.identifier;
             cell.detailTextLabel.text = [self detailsStringForBeacon:beacon];
             cell.detailTextLabel.textColor = [UIColor grayColor];
         }

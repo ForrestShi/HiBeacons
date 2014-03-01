@@ -14,3 +14,10 @@
     @import UIKit;
     @import Foundation;
 #endif
+
+
+#import "WeiboSDK.h"
+
+//com.sina.weibo.SNWeiboSDKDemo
+#define kAppKey         @"2045436852"
+#define kRedirectURI    @"http://www.sina.com"

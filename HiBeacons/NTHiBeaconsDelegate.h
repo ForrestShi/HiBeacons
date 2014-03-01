@@ -24,8 +24,11 @@
 //  THE SOFTWARE.
 //
 
-@interface NTHiBeaconsDelegate : UIResponder <UIApplicationDelegate>
+@interface NTHiBeaconsDelegate : UIResponder <UIApplicationDelegate,WeiboSDKDelegate>{
+    NSString* wbtoken;
+}
 
 @property (strong, nonatomic) UIWindow *window;
+@property (strong, nonatomic) NSString *wbtoken;
 
 @end

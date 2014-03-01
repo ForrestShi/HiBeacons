@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18F1361818C1C5E900436637 /* libWeiboSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F1361518C1C5E900436637 /* libWeiboSDK.a */; };
+		18F1361918C1C5E900436637 /* WeiboSDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 18F1361618C1C5E900436637 /* WeiboSDK.bundle */; };
+		18F1361F18C1C78700436637 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F1361E18C1C78700436637 /* LoginViewController.m */; };
+		18F1362118C1CD0E00436637 /* me2013_s.png in Resources */ = {isa = PBXBuildFile; fileRef = 18F1362018C1CD0E00436637 /* me2013_s.png */; };
 		CF2BC92318019D6100C66D15 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF2BC92218019D6100C66D15 /* Foundation.framework */; };
 		CF2BC92518019D6100C66D15 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF2BC92418019D6100C66D15 /* CoreGraphics.framework */; };
 		CF2BC92718019D6100C66D15 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF2BC92618019D6100C66D15 /* UIKit.framework */; };
@@ -36,6 +40,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		18F1361518C1C5E900436637 /* libWeiboSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libWeiboSDK.a; sourceTree = "<group>"; };
+		18F1361618C1C5E900436637 /* WeiboSDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = WeiboSDK.bundle; sourceTree = "<group>"; };
+		18F1361718C1C5E900436637 /* WeiboSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiboSDK.h; sourceTree = "<group>"; };
+		18F1361D18C1C78700436637 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		18F1361E18C1C78700436637 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
+		18F1362018C1CD0E00436637 /* me2013_s.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = me2013_s.png; sourceTree = "<group>"; };
 		CF2BC91F18019D6100C66D15 /* HiBeacons.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HiBeacons.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF2BC92218019D6100C66D15 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		CF2BC92418019D6100C66D15 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -65,6 +75,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF2BC9591801A35E00C66D15 /* CoreLocation.framework in Frameworks */,
+				18F1361818C1C5E900436637 /* libWeiboSDK.a in Frameworks */,
 				CF2BC9571801A34900C66D15 /* CoreBluetooth.framework in Frameworks */,
 				CF2BC92518019D6100C66D15 /* CoreGraphics.framework in Frameworks */,
 				CF2BC92718019D6100C66D15 /* UIKit.framework in Frameworks */,
@@ -85,9 +96,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18F1361418C1C5E900436637 /* libWeiboSDK */ = {
+			isa = PBXGroup;
+			children = (
+				18F1361518C1C5E900436637 /* libWeiboSDK.a */,
+				18F1361618C1C5E900436637 /* WeiboSDK.bundle */,
+				18F1361718C1C5E900436637 /* WeiboSDK.h */,
+			);
+			path = libWeiboSDK;
+			sourceTree = "<group>";
+		};
 		CF2BC91618019D6100C66D15 = {
 			isa = PBXGroup;
 			children = (
+				18F1362018C1CD0E00436637 /* me2013_s.png */,
+				18F1361418C1C5E900436637 /* libWeiboSDK */,
 				CF2BC92818019D6100C66D15 /* HiBeacons */,
 				CF2BC94118019D6100C66D15 /* HiBeaconsTests */,
 				CF2BC92118019D6100C66D15 /* Frameworks */,
@@ -127,6 +150,8 @@
 				CF2BC9541801A0C700C66D15 /* NTViewController.m */,
 				CF2BC93418019D6100C66D15 /* Images.xcassets */,
 				CF2BC92918019D6100C66D15 /* Supporting Files */,
+				18F1361D18C1C78700436637 /* LoginViewController.h */,
+				18F1361E18C1C78700436637 /* LoginViewController.m */,
 			);
 			path = HiBeacons;
 			sourceTree = "<group>";
@@ -246,6 +271,8 @@
 				CF2BC92D18019D6100C66D15 /* InfoPlist.strings in Resources */,
 				CF2BC93518019D6100C66D15 /* Images.xcassets in Resources */,
 				CF2BC9521801A09D00C66D15 /* Main.storyboard in Resources */,
+				18F1361918C1C5E900436637 /* WeiboSDK.bundle in Resources */,
+				18F1362118C1CD0E00436637 /* me2013_s.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,6 +294,7 @@
 				CF2BC93318019D6100C66D15 /* NTHiBeaconsDelegate.m in Sources */,
 				CF2BC92F18019D6100C66D15 /* main.m in Sources */,
 				CF2BC9551801A0C700C66D15 /* NTViewController.m in Sources */,
+				18F1361F18C1C78700436637 /* LoginViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,6 +416,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HiBeacons/HiBeacons-Prefix.pch";
 				INFOPLIST_FILE = "HiBeacons/HiBeacons-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/apple/workspace/2014Ideas/iBeacons/HiBeacons/libWeiboSDK,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -401,6 +433,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HiBeacons/HiBeacons-Prefix.pch";
 				INFOPLIST_FILE = "HiBeacons/HiBeacons-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/apple/workspace/2014Ideas/iBeacons/HiBeacons/libWeiboSDK,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -467,6 +503,7 @@
 				CF2BC94D18019D6100C66D15 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		CF2BC94E18019D6100C66D15 /* Build configuration list for PBXNativeTarget "HiBeaconsTests" */ = {
 			isa = XCConfigurationList;
@@ -475,6 +512,7 @@
 				CF2BC95018019D6100C66D15 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
