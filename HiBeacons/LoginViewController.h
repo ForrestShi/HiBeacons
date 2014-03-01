@@ -25,5 +25,6 @@
 
 -(IBAction)onLogin:(id)sender;
 -(IBAction)onLogout:(id)sender;
+-(IBAction)onHideMe:(id)sender;
 
 @end

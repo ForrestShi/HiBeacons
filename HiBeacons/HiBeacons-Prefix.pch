@@ -19,6 +19,8 @@
 #import "WeiboSDK.h"
 #import <AFNetworking/AFNetworking.h>
 #import <UIImageView+AFNetworking.h>
+#import <UIColor+iOS7Colors.h>
+#import <CWStatusBarNotification/CWStatusBarNotification.h>
 
 //com.sina.weibo.SNWeiboSDKDemo
 #define kAppKey         @"2045436852"

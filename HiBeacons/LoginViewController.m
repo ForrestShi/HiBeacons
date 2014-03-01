@@ -93,6 +93,11 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     [self polishFaceImage:self.faceImgView3];
     [self polishFaceImage:self.faceImgView4];
     
+    CWStatusBarNotification *notification = [CWStatusBarNotification new];
+    notification.notificationStyle = CWNotificationStyleNavigationBarNotification;
+    
+    [notification displayNotificationWithMessage:@"Free coffee today !" forDuration:1.];
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -240,6 +245,35 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     self.backgroundPulseView.alpha = 0;
 }
 
+-(IBAction)onHideMe:(id)sender{
+    UISwitch *swt = (UISwitch*)sender;
+    if (swt.isOn) {
+        //hide me
+        [self stopAdvertisingBeacon];
+        
+        [UIView animateWithDuration:1. animations:^{
+            self.faceImgView.alpha = .5;
+            self.faceImgView.transform = CGAffineTransformMakeScale( 0.5, 0.5);
+            //self.faceImgView.center = self.view.center;
+        }];
+    }else{
+        [self startAdvertisingBeacon];
+        [UIView animateWithDuration:1. animations:^{
+            self.faceImgView.alpha = 1.;
+            self.faceImgView.transform = CGAffineTransformIdentity;
+            self.faceImgView.center = self.view.center;
+            
+        }];
+
+    }
+}
+
+- (void)stopAdvertisingBeacon
+{
+    [self.peripheralManager stopAdvertising];
+    
+    NSLog(@"Turned off advertising.");
+}
 
 -(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
@@ -454,7 +488,7 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     //1904178197
     NSUInteger userid = (NSUInteger)[[[NSUserDefaults standardUserDefaults] objectForKey:@"userid"] integerValue];
     union Transfer convert;
-    convert.whole = userid;;
+    convert.whole = userid;
     
     CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:self.beaconRegion.proximityUUID
                                                                      major:convert.parts.part1
