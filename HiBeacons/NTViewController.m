@@ -32,13 +32,13 @@ static NSString * const kIdentifier = @"SomeIdentifier";
 static NSString * const kOperationCellIdentifier = @"OperationCell";
 static NSString * const kBeaconCellIdentifier = @"BeaconCell";
 
-static NSString * const kAdvertisingOperationTitle = @"Advertising";
-static NSString * const kRangingOperationTitle = @"Ranging";
+static NSString * const kAdvertisingOperationTitle = @"我在这儿";
+static NSString * const kRangingOperationTitle = @""; //@"Ranging";
 static NSUInteger const kNumberOfSections = 2;
 static NSUInteger const kNumberOfAvailableOperations = 2;
 static CGFloat const kOperationCellHeight = 44;
 static CGFloat const kBeaconCellHeight = 52;
-static NSString * const kBeaconSectionTitle = @"Looking for beacons...";
+static NSString * const kBeaconSectionTitle = @"看看周围有谁哦 ...";
 static CGPoint const kActivityIndicatorPosition = (CGPoint){205, 12};
 static NSString * const kBeaconsHeaderViewIdentifier = @"BeaconsHeader";
 
@@ -64,6 +64,20 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 @end
 
 @implementation NTViewController
+
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    [self startRangingForBeacons];
+    
+    self.rangingSwitch.hidden = YES;
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [self stopRangingForBeacons];
+}
+
 
 #pragma mark - Beacon ranging
 - (void)createBeaconRegion
