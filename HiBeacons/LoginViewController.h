@@ -13,6 +13,8 @@
 @interface LoginViewController : UIViewController<WBHttpRequestDelegate,CLLocationManagerDelegate, CBPeripheralManagerDelegate>
 
 @property (nonatomic) IBOutlet UIButton *loginBtn;
+@property (nonatomic) IBOutlet UIButton *logoutBtn;
+
 @property (nonatomic) IBOutlet UIImageView *faceImgView;
 @property (nonatomic) IBOutlet UIImageView *faceImgView1;
 @property (nonatomic) IBOutlet UIImageView *faceImgView2;
@@ -22,5 +24,6 @@
 @property (strong, nonatomic) NSMutableData *receiveData;
 
 -(IBAction)onLogin:(id)sender;
+-(IBAction)onLogout:(id)sender;
 
 @end

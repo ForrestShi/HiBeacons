@@ -71,8 +71,8 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 
 - (void)polishFaceImage:(UIImageView*)imgView{
     imgView.layer.masksToBounds = YES;
-    imgView.layer.cornerRadius = 40.;
-    imgView.layer.borderColor = [UIColor redColor].CGColor;
+    imgView.layer.cornerRadius = imgView.bounds.size.width/2.;
+    imgView.layer.borderColor = [UIColor yellowColor].CGColor;
     imgView.layer.borderWidth = 2.;
 
 }
@@ -94,6 +94,41 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
+    
+    self.faceImgView1.bounds = CGRectMake(0, 0, 60, 60);
+    self.faceImgView2.bounds = CGRectMake(0, 0, 60, 60);
+    self.faceImgView3.bounds = CGRectMake(0, 0, 60, 60);
+    self.faceImgView4.bounds = CGRectMake(0, 0, 60, 60);
+    
+    
+    BOOL hasLogin = [[NSUserDefaults standardUserDefaults] boolForKey:@"login"];
+    if (hasLogin) {
+        
+        self.loginBtn.alpha = 0;
+
+        NSString *userid = [[NSUserDefaults standardUserDefaults] objectForKey:@"userid"];
+        NSString *token = [[NSUserDefaults standardUserDefaults] objectForKey:@"token"];
+        
+        [self getUserInfo:userid andToken:token];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __weak LoginViewController* weakSelf = self;
+
+            [UIView animateWithDuration:.5 animations:^{
+                 weakSelf.faceImgView.alpha = 1.;
+            } completion:^(BOOL finished) {
+                
+                [weakSelf startRangingForBeacons];
+                [weakSelf startAdvertisingBeacon];
+            }];
+        });
+
+    }
+    
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+
 }
 
 - (void)afterLogin:(NSNotification*)nft{
@@ -107,16 +142,17 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     
     dispatch_async(dispatch_get_main_queue(), ^{
         __weak LoginViewController* weakSelf = self;
-//        self.faceImgView.hidden = NO;
-//        self.faceImgView.alpha = 0;
         
         [UIView animateWithDuration:.5 animations:^{
             weakSelf.loginBtn.alpha = 0;
+            weakSelf.logoutBtn.alpha = 1.;
            // weakSelf.faceImgView.alpha = 1.;
         } completion:^(BOOL finished) {
             
             [weakSelf startRangingForBeacons];
             [weakSelf startAdvertisingBeacon];
+            
+            
         }];
     });
 
@@ -139,8 +175,31 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
                          @"Other_Info_2": @[@"obj1", @"obj2"],
                          @"Other_Info_3": @{@"key1": @"obj1", @"key2": @"obj2"}};
     [WeiboSDK sendRequest:request];
+    
+    
 
 }
+
+-(IBAction)onLogout:(id)sender{
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"login"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    [UIView animateWithDuration:.5 animations:^{
+        self.faceImgView1.alpha = 0;
+        self.faceImgView2.alpha = 0;
+        self.faceImgView3.alpha = 0;
+        self.faceImgView4.alpha = 0;
+        self.faceImgView.alpha = 0;
+        self.loginBtn.alpha = 1.;
+        
+    }completion:^(BOOL finished) {
+        self.logoutBtn.alpha = 1.;
+        
+    }];
+
+    
+}
+
 
 -(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
@@ -413,6 +472,7 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     NSString *token = [[NSUserDefaults standardUserDefaults] objectForKey:@"token"];
     if (self.detectedBeacons && self.detectedBeacons.count > 0 && self.detectedBeacons.count < 5) {
         switch (self.detectedBeacons.count) {
+                
             case 1:
             {
                 [self getUserInfo:[self userIdFromBeacon:[self.detectedBeacons objectAtIndex:0] ] andToken:token forImageView:self.faceImgView1];
@@ -470,6 +530,16 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
                 break;
             }
         }
+    }else{
+    
+        [UIView animateWithDuration:.5 animations:^{
+            self.faceImgView1.alpha = 0;
+            self.faceImgView2.alpha = 0;
+            self.faceImgView3.alpha = 0;
+            self.faceImgView4.alpha = 0;
+            
+        }];
+
     }
 
 }

@@ -100,6 +100,8 @@
             [[NSUserDefaults standardUserDefaults] setObject:self.wbtoken forKey:@"token"];
             [[NSUserDefaults standardUserDefaults] setObject:[(WBAuthorizeResponse *)response userID] forKey:@"userid"];
 
+            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"login"];
+
             [[NSUserDefaults standardUserDefaults] synchronize];
 
             [[NSNotificationCenter defaultCenter] postNotificationName:@"AfterLogin" object:nil userInfo:dict];
