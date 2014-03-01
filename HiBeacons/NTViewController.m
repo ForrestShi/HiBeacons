@@ -32,7 +32,7 @@ static NSString * const kIdentifier = @"SomeIdentifier";
 static NSString * const kOperationCellIdentifier = @"OperationCell";
 static NSString * const kBeaconCellIdentifier = @"BeaconCell";
 
-static NSString * const kAdvertisingOperationTitle = @"我在这儿";
+static NSString * const kAdvertisingOperationTitle = @"隐身";
 static NSString * const kRangingOperationTitle = @""; //@"Ranging";
 static NSUInteger const kNumberOfSections = 2;
 static NSUInteger const kNumberOfAvailableOperations = 2;
@@ -68,9 +68,10 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     
+    self.rangingSwitch.hidden = YES;
     [self startRangingForBeacons];
     
-    self.rangingSwitch.hidden = YES;
+    [self startAdvertisingBeacon];
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -309,7 +310,7 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 {
     if (self.peripheralManager.state != CBPeripheralManagerStatePoweredOn) {
         NSLog(@"Peripheral manager is off.");
-        self.advertisingSwitch.on = NO;
+        self.advertisingSwitch.on = YES;
         return;
     }
     
@@ -328,7 +329,7 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 - (void)changeAdvertisingState:sender
 {
     UISwitch *theSwitch = (UISwitch *)sender;
-    if (theSwitch.on) {
+    if (theSwitch.on == NO ) {
         [self startAdvertisingBeacon];
     } else {
         [self stopAdvertisingBeacon];
@@ -359,13 +360,13 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 {
     if (error) {
         NSLog(@"Couldn't turn on advertising: %@", error);
-        self.advertisingSwitch.on = NO;
+        self.advertisingSwitch.on = YES;
         return;
     }
     
     if (peripheralManager.isAdvertising) {
         NSLog(@"Turned on advertising.");
-        self.advertisingSwitch.on = YES;
+        self.advertisingSwitch.on = NO;
     }
 }
 
@@ -373,7 +374,7 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 {
     if (peripheralManager.state != CBPeripheralManagerStatePoweredOn) {
         NSLog(@"Peripheral manager is off.");
-        self.advertisingSwitch.on = NO;
+        self.advertisingSwitch.on = YES;
         return;
     }
 
