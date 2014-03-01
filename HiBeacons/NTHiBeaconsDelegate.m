@@ -93,8 +93,15 @@
         self.wbtoken = [(WBAuthorizeResponse *)response accessToken];
         
         if (self.wbtoken) {
+            
+            
             NSDictionary *dict = [NSDictionary dictionaryWithObjects:@[self.wbtoken,[(WBAuthorizeResponse *)response userID]] forKeys:@[@"token",@"userid"]];
             
+            [[NSUserDefaults standardUserDefaults] setObject:self.wbtoken forKey:@"token"];
+            [[NSUserDefaults standardUserDefaults] setObject:[(WBAuthorizeResponse *)response userID] forKey:@"userid"];
+
+            [[NSUserDefaults standardUserDefaults] synchronize];
+
             [[NSNotificationCenter defaultCenter] postNotificationName:@"AfterLogin" object:nil userInfo:dict];
             
         }

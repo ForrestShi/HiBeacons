@@ -69,6 +69,14 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     return self;
 }
 
+- (void)polishFaceImage:(UIImageView*)imgView{
+    imgView.layer.masksToBounds = YES;
+    imgView.layer.cornerRadius = 40.;
+    imgView.layer.borderColor = [UIColor redColor].CGColor;
+    imgView.layer.borderWidth = 2.;
+
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -76,11 +84,11 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterLogin:) name:@"AfterLogin" object:nil];
 
-    self.faceImgView.layer.masksToBounds = YES;
-    self.faceImgView.layer.cornerRadius = 40.;
-    self.faceImgView.layer.borderColor = [UIColor redColor].CGColor;
-    self.faceImgView.layer.borderWidth = 2.;
-
+    [self polishFaceImage:self.faceImgView];
+    [self polishFaceImage:self.faceImgView1];
+        [self polishFaceImage:self.faceImgView2];
+        [self polishFaceImage:self.faceImgView3];
+        [self polishFaceImage:self.faceImgView4];
     
 }
 
@@ -185,71 +193,112 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     
     NSString * currentString = (WeiboSDK.isWeiboAppInstalled?oathString:oathString) ;
     
-    //第一步，创建url
-    NSURL *url = [NSURL URLWithString:currentString];
-    //第二步，创建请求
-    NSURLRequest *request = [[NSURLRequest alloc]initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10];
-    //第三步，连接服务器
-    NSURLConnection *connection = [[NSURLConnection alloc]initWithRequest:request delegate:self];
-    
-  //  NSURLConnection *cont = [NSURLConnection r]
-}
-
-- (void) showUserInfo:(NSString *) message
-{
-    NSString *title = @"User Info";
-    
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
-                                                    message:message
-                                                   delegate:nil
-                                          cancelButtonTitle:@"确定"
-                                          otherButtonTitles:nil];
-    
-    [alert show];
-    
-}
-
-
-//接收到服务器回应的时候调用此方法
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    NSHTTPURLResponse *res = (NSHTTPURLResponse *)response;
-    NSLog(@"%@",[res allHeaderFields]);
-    self.receiveData = [NSMutableData data];
-    
-}
-//接收到服务器传输数据的时候调用，此方法根据数据大小执行若干次
--(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    [self.receiveData appendData:data];
-}
-//数据传完之后调用此方法
--(void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    NSString *receiveStr = [[NSString alloc]initWithData:self.receiveData encoding:NSUTF8StringEncoding];
-    //NSLog(@"%@",receiveStr);
-    
-    id json = [NSJSONSerialization JSONObjectWithData:self.receiveData options:NSJSONReadingMutableContainers error:nil];
-    //NSLog(@"json %@", [json);
-    if ([json isKindOfClass:[NSDictionary class]]) {
-        NSString *remoteProfileUrl = [json objectForKey:@"profile_image_url"];
-        self.faceImgView.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:remoteProfileUrl]]];
-        self.faceImgView.hidden = NO;
-        self.faceImgView.alpha = 0;
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager GET:currentString parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            NSLog(@"JSON: %@", responseObject);
+            NSString* remoteUrl = [responseObject objectForKey:@"avatar_hd"];
+            self.faceImgView.hidden = NO;
+            
+            [self.faceImgView setImageWithURL:[NSURL URLWithString:remoteUrl] placeholderImage:[UIImage imageNamed:@"me2013_s.png"]];
+            [UIView animateWithDuration:.5 animations:^{
+                self.faceImgView.alpha = 1.;
+            }];
+        });
         
-        [UIView animateWithDuration:.5 animations:^{
-            self.faceImgView.alpha = 1.;
-        }];
-    }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+        [self.faceImgView setImage:[UIImage imageNamed:@"me2013_s.png"]];
+    }];
     
-    
-}
-//网络请求过程中，出现任何错误（断网，连接超时等）会进入此方法
--(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    NSLog(@"%@",[error localizedDescription]);
 }
 
+
+- (void) getUserInfo:(NSString*)userId andToken:(NSString*)token forImageView:(UIImageView*)imgView{
+    NSString * userid = userId;
+    NSString* wbtoken = token;
+    
+    NSString * oathString = [NSString stringWithFormat:@"https://api.weibo.com/2/users/show.json?uid=%@&access_token=%@",userid,wbtoken];//
+    
+    NSString * currentString = (WeiboSDK.isWeiboAppInstalled?oathString:oathString) ;
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager GET:currentString parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+            NSLog(@"JSON: %@", responseObject);
+            NSString* remoteUrl = [responseObject objectForKey:@"avatar_hd"];
+            imgView.hidden = NO;
+            
+            [imgView setImageWithURL:[NSURL URLWithString:remoteUrl] placeholderImage:[UIImage imageNamed:@"me2013_s.png"]];
+            [UIView animateWithDuration:.5 animations:^{
+                imgView.alpha = 1.;
+            }];
+        });
+
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+        [imgView setImage:[UIImage imageNamed:@"me2013_s.png"]];
+    }];
+    
+}
+
+//- (void) showUserInfo:(NSString *) message
+//{
+//    NSString *title = @"User Info";
+//    
+//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
+//                                                    message:message
+//                                                   delegate:nil
+//                                          cancelButtonTitle:@"确定"
+//                                          otherButtonTitles:nil];
+//    
+//    [alert show];
+//    
+//}
+
+//
+////接收到服务器回应的时候调用此方法
+//- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+//{
+//    NSHTTPURLResponse *res = (NSHTTPURLResponse *)response;
+//    NSLog(@"%@",[res allHeaderFields]);
+//    self.receiveData = [NSMutableData data];
+//    
+//}
+////接收到服务器传输数据的时候调用，此方法根据数据大小执行若干次
+//-(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+//{
+//    [self.receiveData appendData:data];
+//}
+////数据传完之后调用此方法
+//-(void)connectionDidFinishLoading:(NSURLConnection *)connection
+//{
+//    NSString *receiveStr = [[NSString alloc]initWithData:self.receiveData encoding:NSUTF8StringEncoding];
+//    //NSLog(@"%@",receiveStr);
+//    
+//    id json = [NSJSONSerialization JSONObjectWithData:self.receiveData options:NSJSONReadingMutableContainers error:nil];
+//    //NSLog(@"json %@", [json);
+//    if ([json isKindOfClass:[NSDictionary class]]) {
+//        NSString *remoteProfileUrl = [json objectForKey:@"profile_image_url"];
+//        self.faceImgView.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:remoteProfileUrl]]];
+//        self.faceImgView.hidden = NO;
+//        self.faceImgView.alpha = 0;
+//        
+//        [UIView animateWithDuration:.5 animations:^{
+//            self.faceImgView.alpha = 1.;
+//        }];
+//    }
+//    
+//    
+//}
+////网络请求过程中，出现任何错误（断网，连接超时等）会进入此方法
+//-(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+//{
+//    NSLog(@"%@",[error localizedDescription]);
+//}
+//
 
 #pragma mark - Beacon ranging
 - (void)createBeaconRegion
@@ -304,10 +353,9 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     srand((unsigned) time(&t));
     //1827594675
     //1904178197
+    NSUInteger userid = (NSUInteger)[[[NSUserDefaults standardUserDefaults] objectForKey:@"userid"] integerValue];
     union Transfer convert;
-    convert.whole = 1904178197;
-    
-    uint32_t sinaUid = 1904178197;
+    convert.whole = userid;;
     
     CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:self.beaconRegion.proximityUUID
                                                                      major:convert.parts.part1
@@ -362,15 +410,65 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     
     self.detectedBeacons = filteredBeacons;
     
+    NSString *token = [[NSUserDefaults standardUserDefaults] objectForKey:@"token"];
     if (self.detectedBeacons && self.detectedBeacons.count > 0 && self.detectedBeacons.count < 5) {
         switch (self.detectedBeacons.count) {
             case 1:
-                self.faceImgView1.hidden = NO;
-                self.faceImgView1.alpha = 1.;
+            {
+                [self getUserInfo:[self userIdFromBeacon:[self.detectedBeacons objectAtIndex:0] ] andToken:token forImageView:self.faceImgView1];
+                [UIView animateWithDuration:.5 animations:^{
+                    self.faceImgView2.alpha = 0;
+                    self.faceImgView3.alpha = 0;
+                    self.faceImgView4.alpha = 0;
+
+                }];
                 break;
+            }
+            
+            case 2:
+            {
+                [self getUserInfo:[self userIdFromBeacon:[self.detectedBeacons objectAtIndex:0] ] andToken:token forImageView:self.faceImgView1];
+                [self getUserInfo:[self userIdFromBeacon:[self.detectedBeacons objectAtIndex:1] ] andToken:token forImageView:self.faceImgView2];
+                [UIView animateWithDuration:.5 animations:^{
+                    self.faceImgView3.alpha = 0;
+                    self.faceImgView4.alpha = 0;
+                    
+                }];
+
+                break;
+            }
+            case 3:
+            {
+                [self getUserInfo:[self userIdFromBeacon:[self.detectedBeacons objectAtIndex:0] ] andToken:token forImageView:self.faceImgView1];
+                [self getUserInfo:[self userIdFromBeacon:[self.detectedBeacons objectAtIndex:1] ] andToken:token forImageView:self.faceImgView2];
+                 [self getUserInfo:[self userIdFromBeacon:[self.detectedBeacons objectAtIndex:2] ] andToken:token forImageView:self.faceImgView3];
+                [UIView animateWithDuration:.5 animations:^{
+                    self.faceImgView4.alpha = 0;
+                    
+                }];
+
+                break;
+            }
+            case 4:
+            {
+                [self getUserInfo:[self userIdFromBeacon:[self.detectedBeacons objectAtIndex:0] ] andToken:token forImageView:self.faceImgView1];
+                [self getUserInfo:[self userIdFromBeacon:[self.detectedBeacons objectAtIndex:1] ] andToken:token forImageView:self.faceImgView2];
+                [self getUserInfo:[self userIdFromBeacon:[self.detectedBeacons objectAtIndex:2] ] andToken:token forImageView:self.faceImgView3];
                 
-            default:
+                [self getUserInfo:[self userIdFromBeacon:[self.detectedBeacons objectAtIndex:3] ] andToken:token forImageView:self.faceImgView4];
                 break;
+            }
+            default:{
+                [UIView animateWithDuration:.5 animations:^{
+                    self.faceImgView1.alpha = 0;
+                    self.faceImgView2.alpha = 0;
+                    self.faceImgView3.alpha = 0;
+                    self.faceImgView4.alpha = 0;
+                    
+                }];
+
+                break;
+            }
         }
     }
 
