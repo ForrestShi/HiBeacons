@@ -27,6 +27,15 @@ static NSString * const kBeaconSectionTitle = @"看看周围有谁哦 ...";
 static CGPoint const kActivityIndicatorPosition = (CGPoint){205, 12};
 static NSString * const kBeaconsHeaderViewIdentifier = @"BeaconsHeader";
 
+union Transfer {
+    uint32_t whole;
+    struct Parts {
+        uint16_t part1;
+        uint16_t part2;
+    } parts;
+};
+
+
 typedef NS_ENUM(NSUInteger, NTSectionType) {
     NTOperationsSection,
     NTDetectedBeaconsSection
@@ -98,6 +107,8 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
            // weakSelf.faceImgView.alpha = 1.;
         } completion:^(BOOL finished) {
             
+            [weakSelf startRangingForBeacons];
+            [weakSelf startAdvertisingBeacon];
         }];
     });
 
@@ -180,6 +191,8 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
     NSURLRequest *request = [[NSURLRequest alloc]initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10];
     //第三步，连接服务器
     NSURLConnection *connection = [[NSURLConnection alloc]initWithRequest:request delegate:self];
+    
+  //  NSURLConnection *cont = [NSURLConnection r]
 }
 
 - (void) showUserInfo:(NSString *) message
@@ -236,4 +249,198 @@ typedef NS_ENUM(NSUInteger, NTOperationsRow) {
 {
     NSLog(@"%@",[error localizedDescription]);
 }
+
+
+#pragma mark - Beacon ranging
+- (void)createBeaconRegion
+{
+    if (self.beaconRegion)
+        return;
+    
+    NSUUID *proximityUUID = [[NSUUID alloc] initWithUUIDString:kUUID];
+    self.beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:proximityUUID identifier:[NSString stringWithFormat:@"%@",kIdentifier]];
+}
+
+- (void)turnOnRanging
+{
+    NSLog(@"Turning on ranging...");
+    
+    if (![CLLocationManager isRangingAvailable]) {
+        NSLog(@"Couldn't turn on ranging: Ranging is not available.");
+        return;
+    }
+    
+    if (self.locationManager.rangedRegions.count > 0) {
+        NSLog(@"Didn't turn on ranging: Ranging already on.");
+        return;
+    }
+    
+    [self createBeaconRegion];
+    [self.locationManager startRangingBeaconsInRegion:self.beaconRegion];
+    
+    NSLog(@"Ranging turned on for region: %@.", self.beaconRegion);
+}
+
+- (void)startRangingForBeacons
+{
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    
+    self.detectedBeacons = [NSArray array];
+    
+    [self turnOnRanging];
+}
+
+#pragma mark - Beacon advertising
+- (void)turnOnAdvertising
+{
+    if (self.peripheralManager.state != CBPeripheralManagerStatePoweredOn) {
+        NSLog(@"Peripheral manager is off.");
+  //      self.advertisingSwitch.on = YES;
+        return;
+    }
+    
+    time_t t;
+    srand((unsigned) time(&t));
+    //1827594675
+    //1904178197
+    union Transfer convert;
+    convert.whole = 1904178197;
+    
+    uint32_t sinaUid = 1904178197;
+    
+    CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:self.beaconRegion.proximityUUID
+                                                                     major:convert.parts.part1
+                                                                     minor:convert.parts.part2
+                                                                identifier:self.beaconRegion.identifier];
+    NSDictionary *beaconPeripheralData = [region peripheralDataWithMeasuredPower:nil];
+    [self.peripheralManager startAdvertising:beaconPeripheralData];
+    
+    NSLog(@"Turning on advertising for region: %@.", region);
+}
+
+
+- (void)startAdvertisingBeacon
+{
+    NSLog(@"Turning on advertising...");
+    
+    [self createBeaconRegion];
+    
+    if (!self.peripheralManager)
+        self.peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil options:nil];
+    
+    [self turnOnAdvertising];
+}
+
+
+#pragma mark - Beacon ranging delegate methods
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+{
+    if (![CLLocationManager locationServicesEnabled]) {
+        NSLog(@"Couldn't turn on ranging: Location services are not enabled.");
+        return;
+    }
+    
+    if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusAuthorized) {
+        NSLog(@"Couldn't turn on ranging: Location services not authorised.");
+        return;
+    }
+    
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+        didRangeBeacons:(NSArray *)beacons
+               inRegion:(CLBeaconRegion *)region {
+    NSArray *filteredBeacons = [self filteredBeacons:beacons];
+    
+    if (filteredBeacons.count == 0) {
+        NSLog(@"No beacons found nearby.");
+    } else {
+        NSLog(@"Found %lu %@.", (unsigned long)[filteredBeacons count],
+              [filteredBeacons count] > 1 ? @"beacons" : @"beacon");
+    }
+    
+    self.detectedBeacons = filteredBeacons;
+    
+    if (self.detectedBeacons && self.detectedBeacons.count > 0 && self.detectedBeacons.count < 5) {
+        switch (self.detectedBeacons.count) {
+            case 1:
+                self.faceImgView1.hidden = NO;
+                self.faceImgView1.alpha = 1.;
+                break;
+                
+            default:
+                break;
+        }
+    }
+
+}
+
+- (NSString*)userIdFromBeacon:(CLBeacon*)beacon{
+    NSString *userId = nil;
+    if (beacon) {
+        union Transfer gotValue;
+        gotValue.parts.part1 = beacon.major.intValue;
+        gotValue.parts.part2 = beacon.minor.intValue;
+        userId = [NSString stringWithFormat:@"%d",gotValue.whole];
+    }
+
+    return userId;
+}
+
+- (NSArray *)filteredBeacons:(NSArray *)beacons
+{
+    // Filters duplicate beacons out; this may happen temporarily if the originating device changes its Bluetooth id
+    NSMutableArray *mutableBeacons = [beacons mutableCopy];
+    
+    NSMutableSet *lookup = [[NSMutableSet alloc] init];
+    for (int index = 0; index < [beacons count]; index++) {
+        CLBeacon *curr = [beacons objectAtIndex:index];
+        NSString *identifier = [NSString stringWithFormat:@"%@/%@", curr.major, curr.minor];
+        
+        union Transfer gotValue;
+        gotValue.parts.part1 = curr.major.intValue;
+        gotValue.parts.part2 = curr.minor.intValue;
+        
+        NSLog(@"got value %d", gotValue.whole);
+        
+        // this is very fast constant time lookup in a hash table
+        if ([lookup containsObject:identifier]) {
+            [mutableBeacons removeObjectAtIndex:index];
+        } else {
+            [lookup addObject:identifier];
+        }
+    }
+    
+    return [mutableBeacons copy];
+}
+
+#pragma mark - Beacon advertising delegate methods
+- (void)peripheralManagerDidStartAdvertising:(CBPeripheralManager *)peripheralManager error:(NSError *)error
+{
+    if (error) {
+        NSLog(@"Couldn't turn on advertising: %@", error);
+//        self.advertisingSwitch.on = YES;
+        return;
+    }
+    
+    if (peripheralManager.isAdvertising) {
+        NSLog(@"Turned on advertising.");
+//        self.advertisingSwitch.on = NO;
+    }
+}
+
+- (void)peripheralManagerDidUpdateState:(CBPeripheralManager *)peripheralManager
+{
+    if (peripheralManager.state != CBPeripheralManagerStatePoweredOn) {
+        NSLog(@"Peripheral manager is off.");
+//        self.advertisingSwitch.on = YES;
+        return;
+    }
+    
+    NSLog(@"Peripheral manager is on.");
+    [self turnOnAdvertising];
+}
+
+
 @end

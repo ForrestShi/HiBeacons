@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4510" systemVersion="13A603" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4510" systemVersion="13A603" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="k1M-8B-7DP">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
     </dependencies>
@@ -30,11 +30,31 @@
                                 <rect key="frame" x="120" y="244" width="80" height="80"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="me2013_s.png" translatesAutoresizingMaskIntoConstraints="NO" id="dmT-u3-7EK">
+                                <rect key="frame" x="143" y="91" width="80" height="80"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="me2013_s.png" translatesAutoresizingMaskIntoConstraints="NO" id="NLK-m1-uEb">
+                                <rect key="frame" x="240" y="244" width="80" height="80"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="me2013_s.png" translatesAutoresizingMaskIntoConstraints="NO" id="Uu2-7f-qK9">
+                                <rect key="frame" x="174" y="404" width="80" height="80"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="me2013_s.png" translatesAutoresizingMaskIntoConstraints="NO" id="jLu-ZW-V8G">
+                                <rect key="frame" x="12" y="279" width="80" height="80"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
                         <outlet property="faceImgView" destination="uSO-oK-cD3" id="tsy-eI-h5D"/>
+                        <outlet property="faceImgView1" destination="dmT-u3-7EK" id="JMC-9k-orn"/>
+                        <outlet property="faceImgView2" destination="NLK-m1-uEb" id="hqN-tl-FNy"/>
+                        <outlet property="faceImgView3" destination="Uu2-7f-qK9" id="aR6-bv-NYD"/>
+                        <outlet property="faceImgView4" destination="jLu-ZW-V8G" id="3Lb-4i-yAI"/>
                         <outlet property="loginBtn" destination="11t-0k-z69" id="Gms-PA-AlC"/>
                     </connections>
                 </viewController>

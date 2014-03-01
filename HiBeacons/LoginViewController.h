@@ -10,12 +10,14 @@
 @import CoreLocation;
 @import CoreBluetooth;
 
-
-
 @interface LoginViewController : UIViewController<WBHttpRequestDelegate,CLLocationManagerDelegate, CBPeripheralManagerDelegate>
 
 @property (nonatomic) IBOutlet UIButton *loginBtn;
 @property (nonatomic) IBOutlet UIImageView *faceImgView;
+@property (nonatomic) IBOutlet UIImageView *faceImgView1;
+@property (nonatomic) IBOutlet UIImageView *faceImgView2;
+@property (nonatomic) IBOutlet UIImageView *faceImgView3;
+@property (nonatomic) IBOutlet UIImageView *faceImgView4;
 
 @property (strong, nonatomic) NSMutableData *receiveData;
 
